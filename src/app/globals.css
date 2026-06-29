@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #FAF7F2; /* Soft Cream */
+  --foreground: #1A1A1A; /* Dark text for readability */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-garden-green: #1B5E20;
+  --color-soft-cream: #FAF7F2;
+  --color-floral-pink: #E57399;
+  --color-natural-white: #FFFFFF;
+  --color-award-gold: #D4AF37;
+  --color-dark-bg: #0d1b11;
+  --color-dark-card: #142918;
+  --color-dark-surface: #1a3322;
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-lato);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Dark mode body overrides */
+.dark body {
+  background: var(--color-dark-bg);
+  color: #FAF7F2;
+}
