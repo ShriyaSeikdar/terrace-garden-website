@@ -27,7 +27,7 @@ export default function AboutGardener() {
               <div 
                 className="absolute inset-0 bg-garden-green/10 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('/babafc.jpeg')`,
+                  backgroundImage: `url('/babapfp.png')`,
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
