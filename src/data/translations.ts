@@ -7,18 +7,18 @@ export const translations = {
     nav_achievements: "Achievements",
     nav_testimonials: "Testimonials",
     nav_gallery: "Gallery",
-    nav_about: "About",
+    nav_about: "About me",
     nav_whatsapp: "Connect on WhatsApp",
 
     // Hero
-    hero_badge: "Award-Winning Horticulture",
-    hero_title_1: "A Terrace Garden",
-    hero_title_2: "Like No Other",
-    hero_subtitle: "150+ Carefully Nurtured Plants • Award-Winning Gardener • A Premium Collection of Rare Adeniums",
+    hero_badge: "Award-Winning Gardener",
+    hero_title_1: "TERRACE",
+    hero_title_2: "GARDEN",
+    hero_subtitle: "150+ Carefully Nurtured Plants • A Premium Collection of Rare Adeniums",
     hero_quote: "\"Years of dedication, patience, and love have transformed an ordinary terrace into a living paradise.\"",
     hero_cta_explore: "Explore The Collection",
     hero_cta_achievements: "View Achievements",
-    hero_scroll: "Scroll",
+    hero_scroll: "scroll |",
 
     // Trust Statistics
     stat_plants: "Carefully Nurtured Plants",
@@ -127,18 +127,18 @@ export const translations = {
     nav_achievements: "पुरस्कार",
     nav_testimonials: "अनुभव",
     nav_gallery: "गॅलरी",
-    nav_about: "माहिती",
+    nav_about: "माझ्याबद्दल",
     nav_whatsapp: "WhatsApp वर संपर्क करा",
 
     // Hero
-    hero_badge: "पुरस्कार-विजेते बागकाम",
-    hero_title_1: "एक टेरेस गार्डन",
-    hero_title_2: "जसे दुसरे नाही",
-    hero_subtitle: "१५०+ काळजीपूर्वक जोपासलेली रोपे • पुरस्कार-विजेते माळी • दुर्मिळ अॅडेनियमचा प्रीमियम संग्रह",
+    hero_badge: "पुरस्कार-विजेते माळी",
+    hero_title_1: "टेरेस",
+    hero_title_2: "गार्डन",
+    hero_subtitle: "१५०+ काळजीपूर्वक जोपासलेली रोपे • दुर्मिळ अॅडेनियमचा प्रीमियम संग्रह",
     hero_quote: "\"वर्षानुवर्षांच्या समर्पण, धैर्य आणि प्रेमाने एका साध्या टेरेसचे जिवंत नंदनवनात रूपांतर केले.\"",
     hero_cta_explore: "संग्रह पहा",
     hero_cta_achievements: "पुरस्कार पहा",
-    hero_scroll: "स्क्रोल करा",
+    hero_scroll: "scroll |",
 
     // Trust Statistics
     stat_plants: "काळजीपूर्वक जोपासलेली रोपे",

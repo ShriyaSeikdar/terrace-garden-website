@@ -11,6 +11,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-garden-green: #1B5E20;
+  --color-terrace-green: #1B4314;
+  --color-maroon: #7E1E29;
+  --color-terrace-gold: #B8860B; /* Golden brown for gardener badge */
   --color-soft-cream: #FAF7F2;
   --color-floral-pink: #E57399;
   --color-natural-white: #FFFFFF;
@@ -18,8 +21,8 @@
   --color-dark-bg: #0d1b11;
   --color-dark-card: #142918;
   --color-dark-surface: #1a3322;
-  --font-serif: var(--font-playfair);
-  --font-sans: var(--font-lato);
+  --font-serif: var(--font-cormorant), Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: var(--font-lato), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
