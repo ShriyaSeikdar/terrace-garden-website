@@ -30,10 +30,10 @@ export const translations = {
     // About Gardener
     about_title_1: "Meet The Gardener",
     about_title_2: "Behind The Blooms",
-    about_p1: "My journey with plants began decades ago, rooted in a simple fascination with how a tiny seed or a fragile cutting could transform into something breathtakingly beautiful. Over the years, this terrace has become my sanctuary, a living canvas where nature and patience intertwine.",
+    about_p1: "My journey with plants began decades ago, rooted in a simple fascination with how a tiny seed or a fragile cutting could transform into something breathtakingly beautiful. Over the years, this terrace has become my home, a living canvas where nature and patience intertwine.",
     about_p2_start: "I developed a special fondness for ",
     about_p2_adeniums: "Adeniums",
-    about_p2_end: "—the Desert Roses. Their sculptural forms and vibrant blooms taught me resilience. My entire focus shifted to curating, cross-pollinating, and nurturing these magnificent plants to create the stunning collection you see today.",
+    about_p2_end: ":the Desert Roses. Their sculptural forms and vibrant blooms taught me resilience. My entire focus shifted to curating and nurturing these magnificent plants to create the stunning collection you see today.",
     about_quote: "\"Gardening is not just about growing plants; it's about nurturing life. It requires patience, observation, and above all, an abundance of love.\"",
     about_p3_start: "Every plant you see here has been hand-nurtured. I don't just collect plants; I learn from them. The awards and recognition, including the ",
     about_p3_champion: "Champion of Champions",
