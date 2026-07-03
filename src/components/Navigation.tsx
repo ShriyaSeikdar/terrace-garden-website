@@ -18,6 +18,7 @@ export default function Navigation() {
     { name: t("nav_testimonials"), href: "/#testimonials" },
     { name: t("nav_gallery"), href: "/#gallery" },
     { name: t("nav_about"), href: "/#about" },
+    { name: "Admin", href: "/admin" },
   ];
 
   useEffect(() => {

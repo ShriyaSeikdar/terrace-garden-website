@@ -10,27 +10,69 @@ datasource db {
   provider = "postgresql"
 }
 
-model PlantCategory {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?
-  imageUrl    String?
-  plants      Plant[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
 
-model Plant {
-  id                  String        @id @default(cuid())
-  name                String
-  color               String?
-  description         String?
-  imageUrl            String?
-  isCurrentlyBlooming Boolean       @default(false)
-  category            PlantCategory @relation(fields: [categoryId], references: [id])
-  categoryId          String
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+enum SunlightRequirement {
+  FULL_SUN
+  PARTIAL_SUN
+  SHADE
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+model PlantCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  imageUrl    String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id                       String               @id @default(cuid())
+  name                     String
+  scientificName           String?
+  slug                     String               @unique
+  description              String?
+  shortDescription         String?
+  price                    Float
+  discountPrice            Float?
+  stock                    Int                  @default(0)
+  
+  category                 PlantCategory        @relation(fields: [categoryId], references: [id])
+  categoryId               String
+  
+  flowerColor              String?
+  flowerType               String?
+  sunlightRequirement      SunlightRequirement?
+  wateringFrequency        String?
+  difficulty               Difficulty?
+  bloomSeason              String?
+  fertilizerRecommendation String?
+  plantHeight              String?
+  potSize                  String?
+  
+  isFeatured               Boolean              @default(false)
+  images                   String[]
+  tags                     String[]
+  
+  seoTitle                 String?
+  seoDescription           String?
+  
+  status                   ProductStatus        @default(DRAFT)
+  
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
 }
 
 model Achievement {

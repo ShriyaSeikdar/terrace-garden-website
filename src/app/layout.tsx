@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Lato } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "@/context/SettingsContext";
+import { ToastProvider } from "@/context/ToastContext";
 import SettingsToggle from "@/components/SettingsToggle";
 
 const cormorant = Cormorant_Garamond({
@@ -35,8 +36,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <SettingsProvider>
-          {children}
-          <SettingsToggle />
+          <ToastProvider>
+            {children}
+            <SettingsToggle />
+          </ToastProvider>
         </SettingsProvider>
       </body>
     </html>
