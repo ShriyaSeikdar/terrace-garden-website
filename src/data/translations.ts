@@ -75,7 +75,7 @@ export const translations = {
     trust_3_desc: "We don't rush nature. Our plants are given the time they need to develop strong root systems and resilient structures.",
 
     // Testimonials
-    testimonials_title: "Stories From",
+    testimonials_title: "Stories from",
     testimonials_title_highlight: "Fellow Gardeners",
     testimonials_subtitle: "More than just plants, we share a passion that grows with time.",
     testimonial_role: "Plant Enthusiast",
