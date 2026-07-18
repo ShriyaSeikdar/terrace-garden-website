@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -32,6 +30,7 @@ export async function GET() {
       recentProducts
     });
   } catch (error) {
+    console.error('GET /api/admin/dashboard error:', error);
     return NextResponse.json({ error: 'Failed to fetch dashboard stats' }, { status: 500 });
   }
 }

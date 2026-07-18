@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma/client';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -91,6 +90,7 @@ export async function GET(request: Request) {
       }
     });
   } catch (error) {
+    console.error('GET /api/products error:', error);
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }
 }
@@ -134,7 +134,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error('POST /api/products error:', error);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }

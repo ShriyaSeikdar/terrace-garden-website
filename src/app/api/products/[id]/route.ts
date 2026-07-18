@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -18,9 +16,10 @@ export async function GET(request: Request, { params }: Context) {
     }
 
     return NextResponse.json(product);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
-  }
+} catch (error) {
+  console.error('GET /api/products error:', error);
+  return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+}
 }
 
 export async function PUT(request: Request, { params }: Context) {
@@ -60,7 +59,7 @@ export async function PUT(request: Request, { params }: Context) {
 
     return NextResponse.json(product);
   } catch (error) {
-    console.error(error);
+    console.error('PUT /api/products/[id] error:', error);
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
@@ -80,6 +79,7 @@ export async function DELETE(request: Request, { params }: Context) {
 
     return NextResponse.json(archivedProduct);
   } catch (error) {
+    console.error('DELETE /api/products/[id] error:', error);
     return NextResponse.json({ error: 'Failed to archive product' }, { status: 500 });
   }
 }
