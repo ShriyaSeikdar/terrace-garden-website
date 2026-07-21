@@ -46,15 +46,32 @@ export function ProductForm({ initialData }: ProductFormProps) {
   const [uploading, setUploading] = useState(false);
 
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+
   useEffect(() => {
     fetch('/api/categories')
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP error ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (Array.isArray(data)) {
           setCategories(data);
+        } else {
+          setCategoriesError('Invalid data received format.');
         }
       })
-      .catch(err => console.error("Failed to load categories", err));
+      .catch(err => {
+        console.error("Failed to load categories:", err);
+        setCategoriesError(err.message || 'Failed to load categories.');
+      })
+      .finally(() => {
+        setCategoriesLoading(false);
+      });
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -162,10 +179,16 @@ export function ProductForm({ initialData }: ProductFormProps) {
               value={formData.categoryId} 
               onChange={handleInputChange} 
               required 
-              options={[
-                { label: 'Select a category...', value: '' },
-                ...categories.map(c => ({ label: c.name, value: c.id }))
-              ]} 
+              disabled={categoriesLoading || !!categoriesError || categories.length === 0}
+              options={
+                categoriesLoading ? [{ label: 'Loading categories...', value: '' }] :
+                categoriesError ? [{ label: 'Error loading categories', value: '' }] :
+                categories.length === 0 ? [{ label: 'No categories available', value: '' }] :
+                [
+                  { label: 'Select a category...', value: '' },
+                  ...categories.map(c => ({ label: c.name, value: c.id }))
+                ]
+              } 
             />
           </div>
           <Textarea label="Short Description" name="shortDescription" value={formData.shortDescription} onChange={handleInputChange} />
