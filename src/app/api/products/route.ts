@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/prisma/client';
+import { VALID_SUNLIGHTS, VALID_DIFFICULTIES, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -103,6 +104,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    if (data.sunlightRequirement && !VALID_SUNLIGHTS.includes(data.sunlightRequirement)) {
+      return NextResponse.json({ error: 'Invalid sunlight requirement' }, { status: 400 });
+    }
+    if (data.difficulty && !VALID_DIFFICULTIES.includes(data.difficulty)) {
+      return NextResponse.json({ error: 'Invalid difficulty' }, { status: 400 });
+    }
+    if (data.status && !VALID_STATUSES.includes(data.status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    }
+    if (data.flowerType && !VALID_FLOWER_TYPES.includes(data.flowerType)) {
+      return NextResponse.json({ error: 'Invalid flower type' }, { status: 400 });
+    }
+    if (data.flowerColor && !VALID_FLOWER_COLORS.includes(data.flowerColor)) {
+      return NextResponse.json({ error: 'Invalid flower color' }, { status: 400 });
+    }
+
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
@@ -114,11 +131,11 @@ export async function POST(request: Request) {
         shortDescription: data.shortDescription,
         discountPrice: data.discountPrice ? parseFloat(data.discountPrice) : null,
         stock: data.stock ? parseInt(data.stock) : 0,
-        flowerColor: data.flowerColor,
-        flowerType: data.flowerType,
-        sunlightRequirement: data.sunlightRequirement,
+        flowerColor: data.flowerColor || null,
+        flowerType: data.flowerType || null,
+        sunlightRequirement: data.sunlightRequirement || null,
         wateringFrequency: data.wateringFrequency,
-        difficulty: data.difficulty,
+        difficulty: data.difficulty || null,
         bloomSeason: data.bloomSeason,
         fertilizerRecommendation: data.fertilizerRecommendation,
         plantHeight: data.plantHeight,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/context/ToastContext';
 import { Upload, X, Loader2 } from 'lucide-react';
+import { SUNLIGHT_OPTIONS, DIFFICULTY_OPTIONS, STATUS_OPTIONS, FLOWER_TYPE_OPTIONS, FLOWER_COLOR_OPTIONS } from '@/lib/constants';
 
 interface ProductFormProps {
   initialData?: any;
@@ -43,6 +44,18 @@ export function ProductForm({ initialData }: ProductFormProps) {
   });
 
   const [uploading, setUploading] = useState(false);
+
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  useEffect(() => {
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCategories(data);
+        }
+      })
+      .catch(err => console.error("Failed to load categories", err));
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as any;
@@ -143,7 +156,17 @@ export function ProductForm({ initialData }: ProductFormProps) {
               <Button type="button" variant="outline" onClick={generateSlug}>Generate</Button>
             </div>
             <Input label="Scientific Name" name="scientificName" value={formData.scientificName} onChange={handleInputChange} />
-            <Input label="Category ID" name="categoryId" value={formData.categoryId} onChange={handleInputChange} required />
+            <Select 
+              label="Category" 
+              name="categoryId" 
+              value={formData.categoryId} 
+              onChange={handleInputChange} 
+              required 
+              options={[
+                { label: 'Select a category...', value: '' },
+                ...categories.map(c => ({ label: c.name, value: c.id }))
+              ]} 
+            />
           </div>
           <Textarea label="Short Description" name="shortDescription" value={formData.shortDescription} onChange={handleInputChange} />
           <Textarea label="Full Description" name="description" value={formData.description} onChange={handleInputChange} rows={5} />
@@ -161,11 +184,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
               name="status" 
               value={formData.status} 
               onChange={handleInputChange}
-              options={[
-                { label: 'Draft', value: 'DRAFT' },
-                { label: 'Published', value: 'PUBLISHED' },
-                { label: 'Archived', value: 'ARCHIVED' }
-              ]} 
+              options={STATUS_OPTIONS} 
             />
           </div>
           <label className="flex items-center gap-2 cursor-pointer mt-4">
@@ -178,31 +197,33 @@ export function ProductForm({ initialData }: ProductFormProps) {
         <div className="space-y-4 border-b pb-6 md:border-b-0 dark:border-gray-800">
           <h2 className="text-lg font-semibold">Attributes</h2>
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Flower Color" name="flowerColor" value={formData.flowerColor} onChange={handleInputChange} />
-            <Input label="Flower Type" name="flowerType" value={formData.flowerType} onChange={handleInputChange} placeholder="e.g. Single, Double" />
+            <Select 
+              label="Flower Color" 
+              name="flowerColor" 
+              value={formData.flowerColor} 
+              onChange={handleInputChange} 
+              options={FLOWER_COLOR_OPTIONS} 
+            />
+            <Select 
+              label="Flower Type" 
+              name="flowerType" 
+              value={formData.flowerType} 
+              onChange={handleInputChange} 
+              options={FLOWER_TYPE_OPTIONS} 
+            />
             <Select 
               label="Sunlight Requirement" 
               name="sunlightRequirement" 
               value={formData.sunlightRequirement} 
               onChange={handleInputChange}
-              options={[
-                { label: 'Select...', value: '' },
-                { label: 'Full Sun', value: 'FULL_SUN' },
-                { label: 'Partial Sun', value: 'PARTIAL_SUN' },
-                { label: 'Shade', value: 'SHADE' }
-              ]}
+              options={SUNLIGHT_OPTIONS}
             />
             <Select 
               label="Difficulty" 
               name="difficulty" 
               value={formData.difficulty} 
               onChange={handleInputChange}
-              options={[
-                { label: 'Select...', value: '' },
-                { label: 'Beginner', value: 'BEGINNER' },
-                { label: 'Intermediate', value: 'INTERMEDIATE' },
-                { label: 'Expert', value: 'EXPERT' }
-              ]}
+              options={DIFFICULTY_OPTIONS}
             />
             <Input label="Watering Frequency" name="wateringFrequency" value={formData.wateringFrequency} onChange={handleInputChange} />
             <Input label="Bloom Season" name="bloomSeason" value={formData.bloomSeason} onChange={handleInputChange} />
