@@ -1,7 +1,10 @@
 import { PrismaClient } from '../src/generated/prisma/client';
 import { adeniumsData } from '../src/data/adeniums';
 
-const prisma = new PrismaClient();
+import { PrismaPg } from '@prisma/adapter-pg';
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL as string });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Ensure a category exists
