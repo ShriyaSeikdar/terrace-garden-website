@@ -30,7 +30,6 @@ export function ProductFilters({ filters, setFilters, categories }: ProductFilte
       color: '',
       availability: '',
       sunlight: '',
-      difficulty: '',
       flowerType: '',
       minPrice: '',
       maxPrice: '',
@@ -60,15 +59,7 @@ export function ProductFilters({ filters, setFilters, categories }: ProductFilte
         { label: 'Shade', value: 'SHADE' }
       ]
     },
-    {
-      id: 'difficulty',
-      title: 'Difficulty',
-      options: [
-        { label: 'Beginner', value: 'BEGINNER' },
-        { label: 'Intermediate', value: 'INTERMEDIATE' },
-        { label: 'Expert', value: 'EXPERT' }
-      ]
-    },
+
     {
       id: 'flowerType',
       title: 'Flower Type',

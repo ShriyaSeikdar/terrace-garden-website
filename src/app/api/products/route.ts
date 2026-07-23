@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/prisma/client';
-import { VALID_SUNLIGHTS, VALID_DIFFICULTIES, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
+import { VALID_SUNLIGHTS, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,7 +12,6 @@ export async function GET(request: Request) {
   const maxPrice = searchParams.get('maxPrice');
   const availability = searchParams.get('availability');
   const sunlight = searchParams.get('sunlight');
-  const difficulty = searchParams.get('difficulty');
   const flowerType = searchParams.get('flowerType');
   const featured = searchParams.get('featured');
   const page = parseInt(searchParams.get('page') || '1');
@@ -28,7 +27,6 @@ export async function GET(request: Request) {
     where.OR = [
       { name: { contains: search, mode: 'insensitive' } },
       { scientificName: { contains: search, mode: 'insensitive' } },
-      { shortDescription: { contains: search, mode: 'insensitive' } },
       { tags: { has: search } }
     ];
   }
@@ -57,9 +55,7 @@ export async function GET(request: Request) {
     where.sunlightRequirement = sunlight as any;
   }
 
-  if (difficulty) {
-    where.difficulty = difficulty as any;
-  }
+
 
   if (flowerType) {
     where.flowerType = flowerType;
@@ -107,9 +103,7 @@ export async function POST(request: Request) {
     if (data.sunlightRequirement && !VALID_SUNLIGHTS.includes(data.sunlightRequirement)) {
       return NextResponse.json({ error: 'Invalid sunlight requirement' }, { status: 400 });
     }
-    if (data.difficulty && !VALID_DIFFICULTIES.includes(data.difficulty)) {
-      return NextResponse.json({ error: 'Invalid difficulty' }, { status: 400 });
-    }
+
     if (data.status && !VALID_STATUSES.includes(data.status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
@@ -128,17 +122,13 @@ export async function POST(request: Request) {
         categoryId: data.categoryId,
         scientificName: data.scientificName,
         description: data.description,
-        shortDescription: data.shortDescription,
-        discountPrice: data.discountPrice ? parseFloat(data.discountPrice) : null,
         stock: data.stock ? parseInt(data.stock) : 0,
         flowerColor: data.flowerColor || null,
         flowerType: data.flowerType || null,
         sunlightRequirement: data.sunlightRequirement || null,
         wateringFrequency: data.wateringFrequency,
-        difficulty: data.difficulty || null,
         bloomSeason: data.bloomSeason,
         fertilizerRecommendation: data.fertilizerRecommendation,
-        plantHeight: data.plantHeight,
         potSize: data.potSize,
         isFeatured: data.isFeatured || false,
         images: data.images || [],

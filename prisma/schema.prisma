@@ -22,11 +22,7 @@ enum SunlightRequirement {
   SHADE
 }
 
-enum Difficulty {
-  BEGINNER
-  INTERMEDIATE
-  EXPERT
-}
+
 
 model PlantCategory {
   id          String    @id @default(cuid())
@@ -44,9 +40,7 @@ model Product {
   scientificName           String?
   slug                     String               @unique
   description              String?
-  shortDescription         String?
   price                    Float
-  discountPrice            Float?
   stock                    Int                  @default(0)
   
   category                 PlantCategory        @relation(fields: [categoryId], references: [id])
@@ -56,10 +50,8 @@ model Product {
   flowerType               String?
   sunlightRequirement      SunlightRequirement?
   wateringFrequency        String?
-  difficulty               Difficulty?
   bloomSeason              String?
   fertilizerRecommendation String?
-  plantHeight              String?
   potSize                  String?
   
   isFeatured               Boolean              @default(false)

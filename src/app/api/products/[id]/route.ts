@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { VALID_SUNLIGHTS, VALID_DIFFICULTIES, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
+import { VALID_SUNLIGHTS, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -31,9 +31,7 @@ export async function PUT(request: Request, { params }: Context) {
     if (data.sunlightRequirement && data.sunlightRequirement !== "" && !VALID_SUNLIGHTS.includes(data.sunlightRequirement)) {
       return NextResponse.json({ error: 'Invalid sunlight requirement' }, { status: 400 });
     }
-    if (data.difficulty && data.difficulty !== "" && !VALID_DIFFICULTIES.includes(data.difficulty)) {
-      return NextResponse.json({ error: 'Invalid difficulty' }, { status: 400 });
-    }
+
     if (data.status && data.status !== "" && !VALID_STATUSES.includes(data.status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
@@ -53,17 +51,13 @@ export async function PUT(request: Request, { params }: Context) {
         categoryId: data.categoryId,
         scientificName: data.scientificName,
         description: data.description,
-        shortDescription: data.shortDescription,
-        discountPrice: data.discountPrice ? parseFloat(data.discountPrice) : null,
         stock: data.stock !== undefined ? parseInt(data.stock) : undefined,
         flowerColor: data.flowerColor === "" ? null : data.flowerColor,
         flowerType: data.flowerType === "" ? null : data.flowerType,
         sunlightRequirement: data.sunlightRequirement === "" ? null : data.sunlightRequirement,
         wateringFrequency: data.wateringFrequency === "" ? null : data.wateringFrequency,
-        difficulty: data.difficulty === "" ? null : data.difficulty,
         bloomSeason: data.bloomSeason,
         fertilizerRecommendation: data.fertilizerRecommendation,
-        plantHeight: data.plantHeight,
         potSize: data.potSize,
         isFeatured: data.isFeatured,
         images: data.images,

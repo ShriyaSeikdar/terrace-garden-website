@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/context/ToastContext';
 import { Upload, X, Loader2 } from 'lucide-react';
-import { SUNLIGHT_OPTIONS, DIFFICULTY_OPTIONS, STATUS_OPTIONS, FLOWER_TYPE_OPTIONS, FLOWER_COLOR_OPTIONS } from '@/lib/constants';
+import { SUNLIGHT_OPTIONS, STATUS_OPTIONS, FLOWER_TYPE_OPTIONS, FLOWER_COLOR_OPTIONS } from '@/lib/constants';
 
 interface ProductFormProps {
   initialData?: any;
@@ -24,18 +24,14 @@ export function ProductForm({ initialData }: ProductFormProps) {
     slug: initialData?.slug || '',
     categoryId: initialData?.categoryId || '',
     price: initialData?.price || '',
-    discountPrice: initialData?.discountPrice || '',
     stock: initialData?.stock || 0,
     description: initialData?.description || '',
-    shortDescription: initialData?.shortDescription || '',
     flowerColor: initialData?.flowerColor || '',
     flowerType: initialData?.flowerType || '',
     sunlightRequirement: initialData?.sunlightRequirement || '',
     wateringFrequency: initialData?.wateringFrequency || '',
-    difficulty: initialData?.difficulty || '',
     bloomSeason: initialData?.bloomSeason || '',
     fertilizerRecommendation: initialData?.fertilizerRecommendation || '',
-    plantHeight: initialData?.plantHeight || '',
     potSize: initialData?.potSize || '',
     status: initialData?.status || 'DRAFT',
     isFeatured: initialData?.isFeatured || false,
@@ -191,8 +187,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
               } 
             />
           </div>
-          <Textarea label="Short Description" name="shortDescription" value={formData.shortDescription} onChange={handleInputChange} />
-          <Textarea label="Full Description" name="description" value={formData.description} onChange={handleInputChange} rows={5} />
+          <Textarea label="Description" name="description" value={formData.description} onChange={handleInputChange} rows={5} />
         </div>
 
         {/* Pricing & Stock */}
@@ -200,7 +195,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
           <h2 className="text-lg font-semibold">Pricing & Inventory</h2>
           <div className="grid grid-cols-2 gap-4">
             <Input type="number" step="0.01" label="Price ($)" name="price" value={formData.price} onChange={handleInputChange} required />
-            <Input type="number" step="0.01" label="Discount Price ($)" name="discountPrice" value={formData.discountPrice} onChange={handleInputChange} />
             <Input type="number" label="Stock Quantity" name="stock" value={formData.stock} onChange={handleInputChange} required />
             <Select 
               label="Status" 
@@ -241,17 +235,9 @@ export function ProductForm({ initialData }: ProductFormProps) {
               onChange={handleInputChange}
               options={SUNLIGHT_OPTIONS}
             />
-            <Select 
-              label="Difficulty" 
-              name="difficulty" 
-              value={formData.difficulty} 
-              onChange={handleInputChange}
-              options={DIFFICULTY_OPTIONS}
-            />
             <Input label="Watering Frequency" name="wateringFrequency" value={formData.wateringFrequency} onChange={handleInputChange} />
             <Input label="Bloom Season" name="bloomSeason" value={formData.bloomSeason} onChange={handleInputChange} />
             <Input label="Pot Size" name="potSize" value={formData.potSize} onChange={handleInputChange} />
-            <Input label="Plant Height" name="plantHeight" value={formData.plantHeight} onChange={handleInputChange} />
           </div>
           <Input label="Tags (comma separated)" name="tags" value={formData.tags} onChange={handleInputChange} />
         </div>

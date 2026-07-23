@@ -37,7 +37,6 @@ async function main() {
           stock: 10,    // Default stock
           categoryId: category.id,
           description: adenium.description,
-          shortDescription: adenium.description,
           bloomSeason: adenium.bloomSeason,
           images: [adenium.image], // e.g., /p29.jpeg
           status: 'PUBLISHED',

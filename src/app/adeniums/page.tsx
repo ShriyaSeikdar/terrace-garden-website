@@ -25,7 +25,6 @@ function CollectionContent() {
     color: '',
     availability: '',
     sunlight: '',
-    difficulty: '',
     flowerType: '',
     minPrice: '',
     maxPrice: '',
@@ -167,7 +166,7 @@ function CollectionContent() {
                   <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">No adeniums found</h3>
                   <p className="text-gray-500 mb-6">Try adjusting your search or filters.</p>
                   <Button onClick={() => {
-                    setFilters(prev => ({ ...prev, category: '', color: '', availability: '', sunlight: '', difficulty: '', flowerType: '', minPrice: '', maxPrice: '', featured: '' }));
+                    setFilters(prev => ({ ...prev, category: '', color: '', availability: '', sunlight: '', flowerType: '', minPrice: '', maxPrice: '', featured: '' }));
                     setSearchInput('');
                   }}>
                     Clear Filters
