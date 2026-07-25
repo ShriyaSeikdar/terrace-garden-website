@@ -87,13 +87,52 @@ function CollectionContent() {
       );
     }
 
-    // 2. Mocking other filters loosely if applicable
+    // Flower Color
     if (filters.color) {
-      const colorLower = filters.color.toLowerCase();
-      result = result.filter(a => 
-        (a.description && a.description.toLowerCase().includes(colorLower)) || 
-        (a.name && a.name.toLowerCase().includes(colorLower))
-      );
+      result = result.filter(a => a.flowerColor === filters.color);
+    }
+
+    // Availability
+    if (filters.availability) {
+      if (filters.availability === 'In Stock') {
+        result = result.filter(a => a.stock > 0);
+      } else if (filters.availability === 'Out of Stock') {
+        result = result.filter(a => a.stock === 0);
+      }
+    }
+
+    // Sunlight
+    if (filters.sunlight) {
+      result = result.filter(a => a.sunlightRequirement === filters.sunlight);
+    }
+
+    // Flower Type
+    if (filters.flowerType) {
+      result = result.filter(a => a.flowerType === filters.flowerType);
+    }
+
+    // Price Range
+    if (filters.minPrice) {
+      const min = parseFloat(filters.minPrice);
+      if (!isNaN(min)) {
+        result = result.filter(a => a.price >= min);
+      }
+    }
+    if (filters.maxPrice) {
+      const max = parseFloat(filters.maxPrice);
+      if (!isNaN(max)) {
+        result = result.filter(a => a.price <= max);
+      }
+    }
+
+    // Featured
+    if (filters.featured === 'true') {
+      result = result.filter(a => a.isFeatured === true);
+    }
+
+    // Category
+    if (filters.category) {
+      result = result.filter(a => a.categoryId === filters.category);
     }
 
     return result;
@@ -242,7 +281,7 @@ function CollectionContent() {
                           {/* Floating Tags */}
                           <div className="absolute top-4 left-4 flex flex-col gap-2">
                             <span className="inline-flex px-3 py-1 bg-white/90 dark:bg-dark-card/90 backdrop-blur-md text-garden-green dark:text-green-400 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
-                              #{adenium.id ? adenium.id.slice(-4).toUpperCase() : 'N/A'}
+                              #{adenium.serialNumber ? adenium.serialNumber : adenium.id ? adenium.id.slice(-4).toUpperCase() : 'N/A'}
                             </span>
                           </div>
                         </div>

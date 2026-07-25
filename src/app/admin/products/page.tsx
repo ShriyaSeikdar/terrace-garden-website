@@ -118,7 +118,9 @@ export default function AdminProductsPage() {
             ) : (
               products.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {product.serialNumber ? `#${product.serialNumber} - ` : ''}{product.name}
+                  </TableCell>
                   <TableCell>{product.category?.name || 'Uncategorized'}</TableCell>
                   <TableCell>${product.price}</TableCell>
                   <TableCell>

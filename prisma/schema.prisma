@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,28 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
-enum ProductStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-enum SunlightRequirement {
-  FULL_SUN
-  PARTIAL_SUN
-  SHADE
-}
-
-
-
 model PlantCategory {
   id          String    @id @default(cuid())
   name        String    @unique
   description String?
   imageUrl    String?
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  products    Product[]
 }
 
 model Product {
@@ -42,10 +25,7 @@ model Product {
   description              String?
   price                    Float
   stock                    Int                  @default(0)
-  
-  category                 PlantCategory        @relation(fields: [categoryId], references: [id])
   categoryId               String
-  
   flowerColor              String?
   flowerType               String?
   sunlightRequirement      SunlightRequirement?
@@ -53,18 +33,16 @@ model Product {
   bloomSeason              String?
   fertilizerRecommendation String?
   potSize                  String?
-  
   isFeatured               Boolean              @default(false)
   images                   String[]
   tags                     String[]
-  
   seoTitle                 String?
   seoDescription           String?
-  
   status                   ProductStatus        @default(DRAFT)
-  
   createdAt                DateTime             @default(now())
   updatedAt                DateTime             @updatedAt
+  serialNumber             Int?                 @unique
+  category                 PlantCategory        @relation(fields: [categoryId], references: [id])
 }
 
 model Achievement {
@@ -92,7 +70,19 @@ model GalleryImage {
   id        String   @id @default(cuid())
   title     String?
   imageUrl  String
-  tags      String[] // E.g. "Rare", "Terrace View", "Award Ceremony"
+  tags      String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SunlightRequirement {
+  FULL_SUN
+  PARTIAL_SUN
+  SHADE
 }

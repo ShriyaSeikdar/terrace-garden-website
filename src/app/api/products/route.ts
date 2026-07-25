@@ -121,6 +121,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid flower color' }, { status: 400 });
     }
 
+    const category = await prisma.plantCategory.findUnique({
+      where: { id: data.categoryId }
+    });
+
+    let serialNumber: number | null = null;
+    if (category?.name === 'Adeniums') {
+      const maxSerial = await prisma.product.aggregate({
+        _max: {
+          serialNumber: true,
+        }
+      });
+      serialNumber = (maxSerial._max.serialNumber || 0) + 1;
+    }
+
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
@@ -142,6 +156,7 @@ export async function POST(request: Request) {
         tags: data.tags || [],
         seoTitle: data.seoTitle,
         seoDescription: data.seoDescription,
+        serialNumber: serialNumber,
         status: data.status || 'DRAFT'
       }
     });

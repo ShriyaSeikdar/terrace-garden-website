@@ -8,14 +8,14 @@ export default function SettingsToggle() {
   const { darkMode, toggleDarkMode, toggleLanguage, t } = useSettings();
 
   return (
-    <div className="fixed bottom-6 right-6 z-[90] flex flex-col gap-3 items-end">
+    <div className="fixed bottom-6 right-6 z-[90] flex flex-col gap-3 items-end pointer-events-none">
       {/* Language Toggle */}
       <motion.button
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.4 }}
         onClick={toggleLanguage}
-        className="group flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:-translate-y-0.5"
+        className="pointer-events-auto group flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:-translate-y-0.5"
         aria-label="Toggle language"
       >
         <Languages className="w-5 h-5 text-garden-green" />
@@ -30,7 +30,7 @@ export default function SettingsToggle() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.2, duration: 0.4 }}
         onClick={toggleDarkMode}
-        className="group flex items-center justify-center w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:-translate-y-0.5"
+        className="pointer-events-auto group flex items-center justify-center w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:-translate-y-0.5"
         aria-label="Toggle dark mode"
       >
         <AnimatePresence mode="wait">
