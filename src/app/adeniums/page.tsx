@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, useMemo } from 'react';
+import { useState, Suspense, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navigation from "@/components/Navigation";
@@ -11,7 +11,6 @@ import { useSettings } from "@/context/SettingsContext";
 import { ProductFilters } from '@/components/shop/ProductFilters';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { adeniumsData } from '@/data/adeniums';
 
 function CollectionContent() {
   const { t } = useSettings();
@@ -40,16 +39,51 @@ function CollectionContent() {
     setFilters(prev => ({ ...prev, q: val, page: 1 }));
   };
 
-  // Client-side filtering logic for the static 31 adeniums
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setIsLoading(true);
+        // 1. Fetch categories to find Adeniums category ID
+        const catRes = await fetch('/api/categories');
+        if (!catRes.ok) throw new Error('Failed to fetch categories');
+        const categories = await catRes.json();
+        const adeniumsCat = categories.find((c: any) => c.name === 'Adeniums');
+
+        // 2. Fetch products for that category with PUBLISHED status
+        let url = '/api/products?status=PUBLISHED&limit=1000';
+        if (adeniumsCat) {
+          url += `&category=${adeniumsCat.id}`;
+        }
+        
+        const prodRes = await fetch(url);
+        if (!prodRes.ok) throw new Error('Failed to fetch products');
+        const prodData = await prodRes.json();
+        
+        setDbProducts(prodData.products || []);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || 'An error occurred while fetching products.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // Client-side filtering logic for the fetched products
   const filteredAdeniums = useMemo(() => {
-    let result = [...adeniumsData];
+    let result = [...dbProducts];
 
     // 1. Search Query (Name or Description)
     if (filters.q) {
       const qLower = filters.q.toLowerCase();
       result = result.filter(a => 
-        a.name.toLowerCase().includes(qLower) || 
-        a.description.toLowerCase().includes(qLower)
+        (a.name && a.name.toLowerCase().includes(qLower)) || 
+        (a.description && a.description.toLowerCase().includes(qLower))
       );
     }
 
@@ -57,13 +91,13 @@ function CollectionContent() {
     if (filters.color) {
       const colorLower = filters.color.toLowerCase();
       result = result.filter(a => 
-        a.description.toLowerCase().includes(colorLower) || 
-        a.name.toLowerCase().includes(colorLower)
+        (a.description && a.description.toLowerCase().includes(colorLower)) || 
+        (a.name && a.name.toLowerCase().includes(colorLower))
       );
     }
 
     return result;
-  }, [filters]);
+  }, [filters, dbProducts]);
 
   // Pagination logic
   const itemsPerPage = 12;
@@ -161,7 +195,20 @@ function CollectionContent() {
 
             {/* Product Grid */}
             <div className="flex-1">
-              {currentProducts.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center items-center py-24">
+                  <Loader2 className="w-8 h-8 animate-spin text-garden-green" />
+                  <span className="ml-3 text-gray-500 font-medium">Loading Adeniums...</span>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 dark:bg-red-900/20 p-12 rounded-3xl border border-red-100 dark:border-red-900/30 text-center shadow-sm">
+                  <h3 className="text-xl font-medium text-red-800 dark:text-red-400 mb-2">Error Loading Products</h3>
+                  <p className="text-red-600 dark:text-red-300 mb-6">{error}</p>
+                  <Button onClick={() => window.location.reload()} variant="outline" className="border-red-200 hover:bg-red-100 text-red-700">
+                    Try Again
+                  </Button>
+                </div>
+              ) : currentProducts.length === 0 ? (
                 <div className="bg-white dark:bg-dark-card p-12 rounded-3xl border border-gray-100 dark:border-green-900/30 text-center shadow-sm">
                   <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">No adeniums found</h3>
                   <p className="text-gray-500 mb-6">Try adjusting your search or filters.</p>
@@ -188,14 +235,14 @@ function CollectionContent() {
                         <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-dark-surface">
                           <div
                             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                            style={{ backgroundImage: `url(${adenium.image})` }}
+                            style={{ backgroundImage: `url(${adenium.images?.[0] || '/placeholder.jpg'})` }}
                           />
                           <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
                           
                           {/* Floating Tags */}
                           <div className="absolute top-4 left-4 flex flex-col gap-2">
                             <span className="inline-flex px-3 py-1 bg-white/90 dark:bg-dark-card/90 backdrop-blur-md text-garden-green dark:text-green-400 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
-                              {adenium.number}
+                              #{adenium.id ? adenium.id.slice(-4).toUpperCase() : 'N/A'}
                             </span>
                           </div>
                         </div>
@@ -213,10 +260,10 @@ function CollectionContent() {
                           <div className="pt-4 border-t border-gray-100 dark:border-green-900/30 mt-auto">
                             <div className="flex items-center justify-between text-sm mb-4">
                               <span className="text-gray-500 font-medium uppercase tracking-wider text-xs">{t("adeniums_bloom_season")}</span>
-                              <span className="text-garden-green dark:text-green-400 font-semibold">{adenium.bloomSeason}</span>
+                              <span className="text-garden-green dark:text-green-400 font-semibold">{adenium.bloomSeason || 'N/A'}</span>
                             </div>
                             <a
-                              href={`https://wa.me/8983379058?text=${encodeURIComponent(`Hello! I would like to inquire about the ${adenium.name} adenium (No. ${adenium.number}).`)}`}
+                              href={`https://wa.me/8983379058?text=${encodeURIComponent(`Hello! I would like to inquire about the ${adenium.name} adenium (ID: #${adenium.id ? adenium.id.slice(-4).toUpperCase() : 'N/A'}).`)}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="w-full flex items-center justify-center gap-2 bg-garden-green text-white px-4 py-2.5 rounded-xl font-medium text-sm hover:bg-[#154a19] transition-all hover:shadow-md transform hover:-translate-y-0.5"
