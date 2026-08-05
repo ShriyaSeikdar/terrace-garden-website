@@ -41,7 +41,6 @@ model Product {
   status                   ProductStatus        @default(DRAFT)
   createdAt                DateTime             @default(now())
   updatedAt                DateTime             @updatedAt
-  serialNumber             Int?                 @unique
   category                 PlantCategory        @relation(fields: [categoryId], references: [id])
 }
 

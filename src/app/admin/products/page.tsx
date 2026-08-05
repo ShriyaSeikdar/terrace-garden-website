@@ -98,6 +98,7 @@ export default function AdminProductsPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Sr. No.</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
@@ -109,17 +110,20 @@ export default function AdminProductsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">Loading products...</TableCell>
+                <TableCell colSpan={7} className="text-center py-8">Loading products...</TableCell>
               </TableRow>
             ) : products.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">No products found</TableCell>
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">No products found</TableCell>
               </TableRow>
             ) : (
-              products.map((product) => (
+              products.map((product, index) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">
-                    {product.serialNumber ? `#${product.serialNumber} - ` : ''}{product.name}
+                    #{ (page - 1) * 10 + index + 1 }
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {product.name}
                   </TableCell>
                   <TableCell>{product.category?.name || 'Uncategorized'}</TableCell>
                   <TableCell>${product.price}</TableCell>

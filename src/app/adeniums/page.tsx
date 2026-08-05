@@ -281,7 +281,7 @@ function CollectionContent() {
                           {/* Floating Tags */}
                           <div className="absolute top-4 left-4 flex flex-col gap-2">
                             <span className="inline-flex px-3 py-1 bg-white/90 dark:bg-dark-card/90 backdrop-blur-md text-garden-green dark:text-green-400 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
-                              #{adenium.serialNumber ? adenium.serialNumber : adenium.id ? adenium.id.slice(-4).toUpperCase() : 'N/A'}
+                              #{ (filters.page - 1) * itemsPerPage + index + 1 }
                             </span>
                           </div>
                         </div>
@@ -302,7 +302,7 @@ function CollectionContent() {
                               <span className="text-garden-green dark:text-green-400 font-semibold">{adenium.bloomSeason || 'N/A'}</span>
                             </div>
                             <a
-                              href={`https://wa.me/8983379058?text=${encodeURIComponent(`Hello! I would like to inquire about the ${adenium.name} adenium (ID: #${adenium.id ? adenium.id.slice(-4).toUpperCase() : 'N/A'}).`)}`}
+                              href={`https://wa.me/8983379058?text=${encodeURIComponent(`Hello! I would like to inquire about the ${adenium.name} adenium (Sr. No: #${(filters.page - 1) * itemsPerPage + index + 1}).`)}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="w-full flex items-center justify-center gap-2 bg-garden-green text-white px-4 py-2.5 rounded-xl font-medium text-sm hover:bg-[#154a19] transition-all hover:shadow-md transform hover:-translate-y-0.5"
