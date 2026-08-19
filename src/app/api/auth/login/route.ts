@@ -33,10 +33,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    // 4. Sign JWT
+    // 4. Enforce email verification (Server-side block)
+    if (!user.isVerified) {
+      return NextResponse.json({
+        error: 'Email verification required',
+        email: user.email
+      }, { status: 403 });
+    }
+
+    // 5. Sign JWT
     const token = await signJWT({ userId: user.id });
 
-    // 5. Build response and set HTTP-only cookie
+    // 6. Build response and set HTTP-only cookie
     const response = NextResponse.json({
       message: 'Login successful',
       user: {

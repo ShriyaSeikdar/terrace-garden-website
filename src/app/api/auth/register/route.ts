@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import { sendVerificationEmail } from '@/lib/email';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -35,7 +37,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Password must be at least 8 characters long' }, { status: 400 });
     }
     if (password.length > 72) {
-      // bcrypt has a maximum input length of 72 bytes
       return NextResponse.json({ error: 'Password is too long (maximum 72 characters)' }, { status: 400 });
     }
 
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // 4. Create user
+    // 4. Create user in unverified state
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -63,9 +64,38 @@ export async function POST(request: Request) {
       }
     });
 
-    // 5. Safe response
+    // 5. Generate secure random verification token
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+    // 6. Save token in database
+    await prisma.verificationToken.create({
+      data: {
+        email: normalizedEmail,
+        token: hashedToken,
+        expires
+      }
+    });
+
+    // 7. Dispatch verification email
+    const emailSent = await sendVerificationEmail(normalizedEmail, token);
+    if (!emailSent) {
+      // Transaction rollback: remove user and token to allow them to retry registering
+      await prisma.verificationToken.deleteMany({
+        where: { email: normalizedEmail }
+      });
+      await prisma.user.delete({
+        where: { id: user.id }
+      });
+      return NextResponse.json({
+        error: 'Failed to send verification email. Please try again later.'
+      }, { status: 500 });
+    }
+
+    // 8. Safe response
     return NextResponse.json({
-      message: 'Registration successful',
+      message: 'Registration successful! Please check your email to verify your account.',
       user: {
         id: user.id,
         name: user.name,
