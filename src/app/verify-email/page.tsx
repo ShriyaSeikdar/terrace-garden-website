@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import AuthLayout from '@/components/auth/AuthLayout';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -75,26 +75,26 @@ function VerifyEmailContent() {
     }
   };
 
-  return (
-    <Card className="max-w-md w-full p-8 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 shadow-xl rounded-2xl">
-      <div className="logo font-serif text-3xl font-bold text-garden-green dark:text-green-400 text-center mb-6">
-        Terrace<span className="text-award-gold">Garden</span>
-      </div>
-
-      {status === 'loading' && (
-        <div className="flex flex-col items-center justify-center py-6 space-y-4">
-          <Loader2 className="w-12 h-12 text-garden-green animate-spin" />
-          <h2 className="text-xl font-semibold">Verifying your email...</h2>
-          <p className="text-sm text-gray-500 text-center">Please wait while we secure your account.</p>
+  if (status === 'loading') {
+    return (
+      <AuthLayout title="Verifying your email... 🌱" description="Please wait while we secure your account.">
+        <div className="flex flex-col items-center justify-center py-8 space-y-4">
+          <Loader2 className="w-12 h-12 text-garden-green dark:text-green-400 animate-spin" />
         </div>
-      )}
+      </AuthLayout>
+    );
+  }
 
-      {status === 'success' && (
+  if (status === 'success') {
+    return (
+      <AuthLayout>
         <div className="flex flex-col items-center justify-center py-4 text-center space-y-5">
-          <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400" />
+          <div className="w-16 h-16 rounded-full bg-green-50 dark:bg-green-950/30 flex items-center justify-center text-green-600 dark:text-green-400">
+            <CheckCircle className="w-12 h-12" />
+          </div>
           <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-white">Email Verified!</h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            Thank you for verifying your email. Your TerraceGarden account is now active and ready.
+          <p className="text-gray-600 dark:text-gray-300 text-sm max-w-sm leading-relaxed">
+            Thank you for verifying your email. Your TerraceGarden account is now verified and active.
           </p>
           <div className="pt-4 w-full">
             <Link href="/login" className="w-full block">
@@ -104,68 +104,73 @@ function VerifyEmailContent() {
             </Link>
           </div>
         </div>
-      )}
+      </AuthLayout>
+    );
+  }
 
-      {status === 'error' && (
-        <div className="flex flex-col items-center justify-center py-4 space-y-5">
-          <XCircle className="w-16 h-16 text-red-600 dark:text-red-400" />
-          <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-white text-center">Verification Failed</h2>
-          <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-lg text-center w-full">
-            {errorMessage}
-          </p>
-
-          <div className="w-full border-t border-gray-100 dark:border-gray-800 pt-6 mt-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Request another verification link</h3>
-            <form onSubmit={handleResend} className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Enter your email address"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={resendStatus === 'loading'}
-              />
-              
-              {resendStatus === 'success' && (
-                <p className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/20 px-3 py-2 rounded">
-                  {resendMessage}
-                </p>
-              )}
-
-              {resendStatus === 'error' && (
-                <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/20 px-3 py-2 rounded">
-                  {resendMessage}
-                </p>
-              )}
-
-              <Button
-                type="submit"
-                variant="outline"
-                className="w-full py-2 flex items-center justify-center gap-2"
-                isLoading={resendStatus === 'loading'}
-              >
-                <Mail className="w-4 h-4" />
-                Resend Link
-              </Button>
-            </form>
-          </div>
+  return (
+    <AuthLayout>
+      <div className="flex flex-col items-center justify-center py-4 space-y-5">
+        <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400">
+          <XCircle className="w-12 h-12" />
         </div>
-      )}
-    </Card>
+        <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-white text-center">Verification Failed</h2>
+        
+        <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-lg text-center w-full">
+          {errorMessage}
+        </p>
+
+        <div className="w-full border-t border-gray-100 dark:border-gray-800 pt-6 mt-4">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Request another verification link</h3>
+          <form onSubmit={handleResend} className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Enter your email address"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={resendStatus === 'loading'}
+            />
+            
+            {resendStatus === 'success' && (
+              <p className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/20 px-3 py-2 rounded">
+                {resendMessage}
+              </p>
+            )}
+
+            {resendStatus === 'error' && (
+              <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/20 px-3 py-2 rounded">
+                {resendMessage}
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              variant="outline"
+              className="w-full py-2 flex items-center justify-center gap-2 border-garden-green text-garden-green hover:bg-garden-green hover:text-white"
+              isLoading={resendStatus === 'loading'}
+            >
+              <Mail className="w-4 h-4" />
+              Resend Link
+            </Button>
+          </form>
+        </div>
+      </div>
+    </AuthLayout>
   );
 }
 
 export default function VerifyEmailPage() {
   return (
-    <main className="min-h-screen bg-soft-cream dark:bg-dark-bg flex items-center justify-center p-6">
-      <Suspense fallback={
-        <Card className="max-w-md w-full p-8 bg-white dark:bg-dark-card border border-gray-100 dark:border-gray-800 shadow-xl rounded-2xl flex flex-col items-center justify-center py-12 space-y-4">
+    <Suspense fallback={
+      <div className="min-h-screen bg-soft-cream dark:bg-dark-bg flex items-center justify-center p-4">
+        <div className="animate-pulse bg-white dark:bg-dark-card w-full max-w-md h-96 rounded-2xl shadow-xl flex flex-col items-center justify-center py-12 space-y-4">
           <Loader2 className="w-12 h-12 text-garden-green animate-spin" />
           <h2 className="text-xl font-semibold">Loading...</h2>
-        </Card>
-      }>
-        <VerifyEmailContent />
-      </Suspense>
-    </main>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

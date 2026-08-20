@@ -5,7 +5,7 @@ const secretKey = new TextEncoder().encode(
   process.env.AUTH_SECRET || 'fallback-secret-for-dev-only-change-in-prod'
 );
 
-export async function signJWT(payload: { userId: string }): Promise<string> {
+export async function signJWT(payload: { userId: string; passwordVersion: number }): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -13,16 +13,16 @@ export async function signJWT(payload: { userId: string }): Promise<string> {
     .sign(secretKey);
 }
 
-export async function verifyJWT(token: string): Promise<{ userId: string } | null> {
+export async function verifyJWT(token: string): Promise<{ userId: string; passwordVersion: number } | null> {
   try {
     const { payload } = await jwtVerify(token, secretKey);
-    return payload as { userId: string };
+    return payload as { userId: string; passwordVersion: number };
   } catch (error) {
     return null;
   }
 }
 
-export async function getSessionUser(request?: Request): Promise<{ userId: string } | null> {
+export async function getSessionUser(request?: Request): Promise<{ userId: string; passwordVersion: number } | null> {
   let token: string | undefined;
 
   // 1. Try to get token from request cookies (useful in middleware or standard request contexts)

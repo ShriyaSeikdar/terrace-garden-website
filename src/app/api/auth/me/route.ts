@@ -14,8 +14,16 @@ export async function GET(request: Request) {
       where: { id: session.userId }
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User no longer exists' }, { status: 401 });
+    if (!user || user.passwordVersion !== session.passwordVersion) {
+      const response = NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+      response.cookies.set('tg-session', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        expires: new Date(0)
+      });
+      return response;
     }
 
     return NextResponse.json({

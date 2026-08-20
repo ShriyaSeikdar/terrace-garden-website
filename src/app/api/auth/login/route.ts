@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     // 5. Sign JWT
-    const token = await signJWT({ userId: user.id });
+    const token = await signJWT({ userId: user.id, passwordVersion: user.passwordVersion });
 
     // 6. Build response and set HTTP-only cookie
     const response = NextResponse.json({
