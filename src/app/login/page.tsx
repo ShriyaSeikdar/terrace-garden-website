@@ -20,6 +20,8 @@ function LoginContent() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [pageError, setPageError] = useState<string | null>(null);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [resendingVerification, setResendingVerification] = useState(false);
 
   // Read URL query parameters to force visual states for reviewer testing
   const isLoading = isSubmitLoading || stateParam === 'loading';
@@ -34,10 +36,33 @@ function LoginContent() {
     }
   }, [stateParam]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleResendVerification = async () => {
+    if (!unverifiedEmail) return;
+    setResendingVerification(true);
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: unverifiedEmail })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast(data.message || 'Verification email resent.', 'success');
+      } else {
+        toast(data.error || 'Failed to resend verification email.', 'error');
+      }
+    } catch (err) {
+      toast('A network error occurred. Please try again.', 'error');
+    } finally {
+      setResendingVerification(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setPageError(null);
+    setUnverifiedEmail(null);
 
     let hasErrors = false;
     const newErrors: { email?: string; password?: string } = {};
@@ -63,22 +88,57 @@ function LoginContent() {
       return;
     }
 
-    // Strict UI-first rule: do not submit to API or create fake sessions.
-    // Toggle loading spinner for manual visual verification
     setIsSubmitLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        toast('Login successful!', 'success');
+        const redirectUrl = searchParams.get('redirect') || '/';
+        window.location.href = redirectUrl;
+      } else {
+        if (response.status === 403 || data.error === 'Email verification required') {
+          setPageError('Please verify your email before signing in.');
+          setUnverifiedEmail(data.email || email.trim().toLowerCase());
+        } else if (response.status === 401) {
+          setPageError('Invalid email or password.');
+        } else {
+          setPageError('Something went wrong. Please try again.');
+        }
+        toast(data.error || 'Login failed.', 'error');
+      }
+    } catch (err) {
+      setPageError('Something went wrong. Please try again.');
+      toast('Something went wrong. Please try again.', 'error');
+    } finally {
       setIsSubmitLoading(false);
-      toast('Form validated! (Strict UI-first mode: no session created)', 'info');
-    }, 1000);
+    }
   };
 
   return (
     <AuthLayout title="Welcome Back 🌱" description="Sign in to your account">
       <form onSubmit={handleSubmit} className="space-y-5 mt-4">
         {hasPageError && (
-          <div className="flex items-center gap-2.5 p-3.5 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300">
-            <AlertCircle className="w-5 h-5 shrink-0 text-red-600 dark:text-red-400" />
-            <span>{pageError || 'Invalid email or password'}</span>
+          <div className="flex flex-col gap-2 p-3.5 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-5 h-5 shrink-0 text-red-600 dark:text-red-400" />
+              <span>{pageError}</span>
+            </div>
+            {unverifiedEmail && (
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                disabled={resendingVerification}
+                className="text-xs font-semibold text-garden-green dark:text-green-400 hover:underline text-left mt-1 disabled:opacity-50"
+              >
+                {resendingVerification ? 'Resending...' : 'Click here to resend the verification link'}
+              </button>
+            )}
           </div>
         )}
 

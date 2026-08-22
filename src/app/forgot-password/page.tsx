@@ -18,11 +18,12 @@ function ForgotPasswordContent() {
   const [error, setError] = useState<string | null>(null);
   const [pageError, setPageError] = useState<string | null>(null);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [isSuccessState, setIsSuccessState] = useState(false);
 
   // Read URL query parameters to force visual states for reviewer testing
   const isLoading = isSubmitLoading || stateParam === 'loading';
   const hasPageError = pageError || stateParam === 'error';
-  const isSuccess = stateParam === 'success';
+  const isSuccess = isSuccessState || stateParam === 'success';
   const forceValidation = stateParam === 'validation';
 
   useEffect(() => {
@@ -33,7 +34,7 @@ function ForgotPasswordContent() {
     }
   }, [stateParam]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setPageError(null);
@@ -49,12 +50,25 @@ function ForgotPasswordContent() {
       return;
     }
 
-    // Strict UI-first: trigger loading spinner for manual visual verification
     setIsSubmitLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send reset link. Please try again.');
+      }
+      setIsSuccessState(true);
+      toast("If an account exists for this email, we've sent a password reset link.", 'success');
+    } catch (err: any) {
+      setPageError(err.message);
+      toast(err.message, 'error');
+    } finally {
       setIsSubmitLoading(false);
-      toast('Form validated! (Strict UI-first mode: no email sent)', 'info');
-    }, 1000);
+    }
   };
 
   if (isSuccess) {

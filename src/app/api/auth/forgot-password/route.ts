@@ -39,24 +39,12 @@ export async function POST(request: Request) {
       where: { email: normalizedEmail }
     });
 
-    // 3. Find user
-    const user = await prisma.user.findUnique({
-      where: { email: normalizedEmail }
-    });
-
-    // Prevent account enumeration: return same success message if user doesn't exist
-    if (!user) {
-      return NextResponse.json({
-        message: 'If an account exists for this email, a password reset link has been sent.'
-      });
-    }
-
-    // 4. Generate secure token
+    // 3. Generate secure token & hash it
     const token = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
     const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    // 5. Store hashed token in DB
+    // 4. Store hashed token in DB for BOTH existing and non-existing users
     const newRecord = await prisma.passwordResetToken.create({
       data: {
         email: normalizedEmail,
@@ -64,6 +52,18 @@ export async function POST(request: Request) {
         expires
       }
     });
+
+    // 5. Find user
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail }
+    });
+
+    // Prevent account enumeration: return same success message if user doesn't exist
+    if (!user) {
+      return NextResponse.json({
+        message: "If an account exists for this email, we've sent a password reset link."
+      });
+    }
 
     // 6. Send the reset email
     const emailSent = await sendPasswordResetEmail(normalizedEmail, token);
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      message: 'If an account exists for this email, a password reset link has been sent.'
+      message: "If an account exists for this email, we've sent a password reset link."
     });
 
   } catch (error) {

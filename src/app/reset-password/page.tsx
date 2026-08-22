@@ -26,10 +26,11 @@ function ResetPasswordContent() {
   }>({});
   const [pageError, setPageError] = useState<string | null>(null);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [isSuccessState, setIsSuccessState] = useState(false);
 
   // Read URL query parameters to force visual states for reviewer testing
   const isInvalidToken = !token || stateParam === 'invalid';
-  const isSuccess = stateParam === 'success';
+  const isSuccess = isSuccessState || stateParam === 'success';
   const isLoading = isSubmitLoading || stateParam === 'loading';
   const hasPageError = pageError || stateParam === 'error';
   const forceValidation = stateParam === 'validation';
@@ -42,7 +43,7 @@ function ResetPasswordContent() {
     }
   }, [stateParam]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setPageError(null);
@@ -77,12 +78,25 @@ function ResetPasswordContent() {
       return;
     }
 
-    // Strict UI-first: trigger loading spinner for manual visual verification
     setIsSubmitLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reset password. Please request a new link.');
+      }
+      setIsSuccessState(true);
+      toast('Password reset successful! You can now log in.', 'success');
+    } catch (err: any) {
+      setPageError(err.message);
+      toast(err.message, 'error');
+    } finally {
       setIsSubmitLoading(false);
-      toast('Form validated! (Strict UI-first mode: no reset password call)', 'info');
-    }, 1000);
+    }
   };
 
   if (isInvalidToken) {
