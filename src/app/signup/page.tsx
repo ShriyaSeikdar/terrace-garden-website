@@ -30,10 +30,12 @@ function SignupContent() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
+  const [isRegistered, setIsRegistered] = useState(false);
+
   // Read URL query parameters to force visual states for reviewer testing
   const isLoading = isSubmitLoading || stateParam === 'loading';
   const hasPageError = pageError || stateParam === 'error';
-  const isSuccess = stateParam === 'success';
+  const showSuccess = isRegistered || stateParam === 'success';
   const forceValidation = stateParam === 'validation';
 
   useEffect(() => {
@@ -44,25 +46,33 @@ function SignupContent() {
     }
   }, [stateParam]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent duplicate submissions
     setErrors({});
     setPageError(null);
 
     let hasErrors = false;
     const newErrors: typeof errors = {};
 
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const normalizedEmail = trimmedEmail.toLowerCase();
+
     // Validate name
-    if (!name.trim()) {
+    if (!trimmedName) {
       newErrors.name = 'Full name is required';
+      hasErrors = true;
+    } else if (trimmedName.length > 50) {
+      newErrors.name = 'Name cannot exceed 50 characters';
       hasErrors = true;
     }
 
     // Validate email
-    if (!email) {
+    if (!trimmedEmail) {
       newErrors.email = 'Email address is required';
       hasErrors = true;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       newErrors.email = 'Please enter a valid email address';
       hasErrors = true;
     }
@@ -94,25 +104,62 @@ function SignupContent() {
       return;
     }
 
-    // Strict UI-first rule: do not submit to API.
-    // Trigger loading spinner for manual visual verification
     setIsSubmitLoading(true);
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: normalizedEmail,
+          password: password,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        setIsRegistered(true);
+        toast('Account created! Please check your email to verify.', 'success');
+      } else {
+        const errorMessage = data.error || '';
+        
+        if (response.status === 500) {
+          setPageError('Something went wrong. Please try again.');
+          toast('Something went wrong. Please try again.', 'error');
+        } else if (errorMessage === 'An account with this email already exists') {
+          setPageError('An account with this email already exists');
+          toast('An account with this email already exists', 'error');
+        } else if (errorMessage) {
+          setPageError(errorMessage);
+          toast(errorMessage, 'error');
+        } else {
+          setPageError('Something went wrong. Please try again.');
+          toast('Something went wrong. Please try again.', 'error');
+        }
+      }
+    } catch (err) {
+      console.error('Registration submission error:', err);
+      setPageError('Something went wrong. Please try again.');
+      toast('Something went wrong. Please try again.', 'error');
+    } finally {
       setIsSubmitLoading(false);
-      toast('Form validated! (Strict UI-first mode: no API registration call)', 'info');
-    }, 1000);
+    }
   };
 
-  if (isSuccess) {
+  if (showSuccess) {
     return (
       <AuthLayout>
         <div className="flex flex-col items-center justify-center text-center py-4 space-y-5">
           <div className="w-16 h-16 rounded-full bg-green-50 dark:bg-green-950/30 flex items-center justify-center text-green-600 dark:text-green-400">
             <CheckCircle className="w-12 h-12" />
           </div>
-          <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-white">Verify Your Email</h2>
+          <h2 className="text-2xl font-serif font-bold text-gray-800 dark:text-white">Account Created Successfully</h2>
           <p className="text-gray-600 dark:text-gray-300 text-sm max-w-sm">
-            Thank you for registering! We have sent a verification link to your email address. Please click the link to activate your TerraceGarden account.
+            We've sent a verification email to your email address. Please verify your email before signing in.
           </p>
           <div className="pt-4 w-full">
             <Link href="/login" className="w-full block">
