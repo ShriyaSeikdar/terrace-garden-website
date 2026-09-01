@@ -3,7 +3,9 @@ import { Cormorant_Garamond, Lato } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { ToastProvider } from "@/context/ToastContext";
+import { AuthProvider } from "@/context/AuthContext";
 import SettingsToggle from "@/components/SettingsToggle";
+import ProfileButton from "@/components/auth/ProfileButton";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -36,10 +38,13 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <SettingsProvider>
-          <ToastProvider>
-            {children}
-            <SettingsToggle />
-          </ToastProvider>
+          <AuthProvider>
+            <ToastProvider>
+              {children}
+              <ProfileButton />
+              <SettingsToggle />
+            </ToastProvider>
+          </AuthProvider>
         </SettingsProvider>
       </body>
     </html>

@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
 import { useSettings } from "@/context/SettingsContext";
 
 export default function Hero() {
@@ -47,20 +46,10 @@ export default function Hero() {
           </h2>
           
           {/* Description "150+ Carefully Nurtured Plants..." */}
-          <p className="text-gray-800 text-lg sm:text-xl md:text-2xl lg:text-3xl font-light mb-8 max-w-4xl mx-auto leading-relaxed font-serif italic">
+          <p className="text-gray-800 text-lg sm:text-xl md:text-2xl lg:text-3xl font-light mb-12 max-w-4xl mx-auto leading-relaxed font-serif italic">
             {t("hero_subtitle")}
           </p>
 
-          {/* Sign In CTA */}
-          <div className="mb-10">
-            <a 
-              href="/login" 
-              className="font-serif text-sm font-bold tracking-wider text-maroon hover:text-[#5c151e] transition-colors uppercase inline-flex items-center gap-1.5"
-            >
-              Sign in to your TerraceGarden account &rarr;
-            </a>
-          </div>
-  
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <a 
