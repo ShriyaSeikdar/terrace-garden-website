@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@/generated/prisma/client';
+import { Prisma, ProductStatus, SunlightRequirement } from '@/generated/prisma/client';
 import { VALID_SUNLIGHTS, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
+import { requireAdmin } from '@/lib/auth';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -23,8 +24,8 @@ export async function GET(request: Request) {
   const where: Prisma.ProductWhereInput = {};
   
   if (status) {
-    if (status !== 'all') {
-      where.status = status as any;
+    if (status !== 'all' && (VALID_STATUSES as readonly string[]).includes(status)) {
+      where.status = status as ProductStatus;
     }
   } else {
     where.status = { not: 'ARCHIVED' };
@@ -58,8 +59,8 @@ export async function GET(request: Request) {
     where.stock = { equals: 0 };
   }
 
-  if (sunlight) {
-    where.sunlightRequirement = sunlight as any;
+  if (sunlight && (VALID_SUNLIGHTS as readonly string[]).includes(sunlight)) {
+    where.sunlightRequirement = sunlight as SunlightRequirement;
   }
 
 
@@ -101,6 +102,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request);
+    if (auth.response) {
+      return auth.response;
+    }
+
     const data = await request.json();
     
     if (!data.name || !data.slug || !data.price || !data.categoryId) {

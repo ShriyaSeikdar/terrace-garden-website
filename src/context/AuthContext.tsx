@@ -14,6 +14,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -109,6 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isLoading,
         isAuthenticated: !!user,
+        isAdmin: user?.role === 'ADMIN',
         checkAuth,
         logout,
       }}

@@ -1,8 +1,20 @@
 import React from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, ShoppingBag, Settings, LogOut } from 'lucide-react';
+import { redirect } from 'next/navigation';
+import { LayoutDashboard, ShoppingBag, LogOut } from 'lucide-react';
+import { getAuthenticatedUser } from '@/lib/auth';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = await getAuthenticatedUser();
+
+  if (!user) {
+    redirect('/login?redirect=/admin');
+  }
+
+  if (user.role !== 'ADMIN') {
+    redirect('/');
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 flex">
       {/* Sidebar */}

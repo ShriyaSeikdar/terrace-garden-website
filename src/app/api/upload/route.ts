@@ -2,9 +2,15 @@ import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request);
+    if (auth.response) {
+      return auth.response;
+    }
+
     const formData = await request.formData();
     const files = formData.getAll('file') as File[];
     

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     if (existingTokens.length > 0) {
       const latestToken = existingTokens[0];
-      const elapsedMs = Date.now() - latestToken.createdAt.getTime();
+      const elapsedMs =  Date.now() - latestToken.createdAt.getTime();
       const cooldownMs = 60 * 1000;
 
       if (elapsedMs < cooldownMs) {

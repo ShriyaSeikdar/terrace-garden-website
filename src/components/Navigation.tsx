@@ -5,11 +5,14 @@ import Link from "next/link";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSettings } from "@/context/SettingsContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useSettings();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
   const navLinks = [
     { name: t("nav_home"), href: "/#home" },
@@ -18,7 +21,7 @@ export default function Navigation() {
     { name: t("nav_testimonials"), href: "/#testimonials" },
     { name: t("nav_gallery"), href: "/#gallery" },
     { name: t("nav_about"), href: "/#about" },
-    { name: "Admin", href: "/admin" },
+    ...(isAdmin ? [{ name: "Admin", href: "/admin" }] : []),
   ];
 
   useEffect(() => {

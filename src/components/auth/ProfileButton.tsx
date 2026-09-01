@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User as UserIcon, Heart, Package, LogOut, ChevronUp } from 'lucide-react';
+import { User as UserIcon, Heart, Package, LogOut, ChevronUp, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 
 export default function ProfileButton() {
-  const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const { user, isLoading, isAuthenticated, isAdmin, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -21,7 +21,7 @@ export default function ProfileButton() {
   }
 
   // Keep ProfileButton hidden on specific authentication form pages,
-  // but keep it visible on /profile, /wishlist, /orders, and all public routes (homepage, catalog, etc.)
+  // but keep it visible on /profile, /wishlist, /orders, /admin, and all public routes
   const hiddenRoutes = [
     '/login',
     '/signup',
@@ -143,6 +143,18 @@ export default function ProfileButton() {
                 <Package className="w-4 h-4 text-terrace-gold dark:text-award-gold group-hover:scale-110 transition-transform shrink-0" />
                 <span>My Orders</span>
               </Link>
+
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setIsOpen(false)}
+                  role="menuitem"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-garden-green dark:text-award-gold hover:bg-soft-cream dark:hover:bg-dark-surface transition-colors font-medium group border-t border-gray-100 dark:border-gray-800/60 mt-0.5 pt-2.5"
+                >
+                  <Shield className="w-4 h-4 text-terrace-gold dark:text-award-gold group-hover:scale-110 transition-transform shrink-0" />
+                  <span>Admin Dashboard</span>
+                </Link>
+              )}
             </div>
 
             {/* Sign Out Action */}

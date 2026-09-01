@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { VALID_SUNLIGHTS, VALID_STATUSES, VALID_FLOWER_TYPES, VALID_FLOWER_COLORS } from '@/lib/constants';
+import { requireAdmin } from '@/lib/auth';
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -17,14 +18,19 @@ export async function GET(request: Request, { params }: Context) {
     }
 
     return NextResponse.json(product);
-} catch (error) {
-  console.error('GET /api/products error:', error);
-  return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
-}
+  } catch (error) {
+    console.error('GET /api/products/[id] error:', error);
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
+  }
 }
 
 export async function PUT(request: Request, { params }: Context) {
   try {
+    const auth = await requireAdmin(request);
+    if (auth.response) {
+      return auth.response;
+    }
+
     const { id } = await params;
     const data = await request.json();
 
@@ -77,6 +83,11 @@ export async function PUT(request: Request, { params }: Context) {
 
 export async function DELETE(request: Request, { params }: Context) {
   try {
+    const auth = await requireAdmin(request);
+    if (auth.response) {
+      return auth.response;
+    }
+
     const { id } = await params;
     const product = await prisma.product.findUnique({ where: { id } });
     if (!product) {
